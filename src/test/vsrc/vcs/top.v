@@ -31,6 +31,7 @@ import "DPI-C" function void simv_tick();
 `ifdef ENABLE_WORKLOAD_SWITCH
 import "DPI-C" function void set_workload_list(string path);
 `endif // ENABLE_WORKLOAD_SWITCH
+import "DPI-C" function byte workload_list_completed();
 `ifndef CONFIG_DIFFTEST_DEFERRED_RESULT
 import "DPI-C" function byte simv_nstep(byte step);
 `endif // CONFIG_DIFFTEST_DEFERRED_RESULT
@@ -98,7 +99,7 @@ initial begin
 `endif
     else begin
       $display("unknown wave file format, want [vpd, fsdb] but:%s\n", wave_type);
-      $fatal;
+      $fatal();
     end
   end
 `endif
@@ -155,7 +156,7 @@ initial begin
   end
   else begin
     $display("workload switch is enabled but the workload list is not set");
-    $fatal;
+    $fatal();
   end
 `endif // ENABLE_WORKLOAD_SWITCH
 `endif // TB_NO_DPIC
@@ -285,13 +286,13 @@ always @(posedge clock) begin
         end
         else begin
           $display("DIFFTEST INIT FAILED");
-          $fatal;
+          $fatal();
         end
       end
     end
     else if (simv_result == `SIMV_FAIL) begin
       $display("DIFFTEST FAILED at cycle %d", n_cycles);
-      $fatal;
+      $fatal();
     end
     else if (simv_result == `SIMV_DONE) begin
       $display("DIFFTEST WORKLOAD DONE at cycle %d", n_cycles);
