@@ -398,7 +398,13 @@ int Difftest::step() {
 
 void Difftest::do_interrupt() {
   state->record_interrupt(dut->event.exceptionPC, dut->event.exceptionInst, dut->event.interrupt);
-  proxy->trigger_nmi(dut->event.hasNMI);
+  if (dut->event.hasNMI) {
+    proxy->trigger_nmi(dut->event.hasNMI);
+  } else if (dut->event.virtualInterruptIsHvictlInject) {
+    proxy->virtual_interrupt_is_hvictl_inject(dut->event.virtualInterruptIsHvictlInject);
+  } else {
+    printf("No NMI interrupt and virtual interrupt is not hvictl inject\n");
+  }
   proxy->raise_intr(dut->event.interrupt | (1ULL << 63));
   progress = true;
 }
